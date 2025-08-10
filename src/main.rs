@@ -1,23 +1,35 @@
+use clap::Parser;
 use std::fs;
+use std::fs::File;
 use std::io;
 use std::io::{Read, Seek, SeekFrom};
 use std::process::ExitCode;
-use std::{env, fs::File};
+
+#[derive(Parser)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    file_name: String,
+    #[arg(short, long)]
+    delete: bool,
+}
 
 fn main() -> ExitCode {
-    let args: Vec<String> = env::args().collect();
-    if args.len() != 2 {
-        eprintln!("Usage: jpegger filename");
-        std::process::exit(1);
-    }
+    let cli = Cli::parse();
 
-    let delete_it: bool = false;
-    match is_corrupted_jpeg(&args[1]) {
+    match is_corrupted_jpeg(&cli.file_name) {
         Ok(is_corrupted) => {
             if is_corrupted {
-                println!("{}", &args[1]);
-                if delete_it {
-                    fs::remove_file(&args[1]);
+                println!("{} is corrupted.", &cli.file_name);
+                if cli.delete {
+                    match fs::remove_file(&cli.file_name) {
+                        Ok(_) => {
+                            println!("{} deleted.", &cli.file_name);
+                        }
+                        Err(e) => {
+                            eprintln!("{}", e);
+                            return ExitCode::FAILURE;
+                        }
+                    }
                 }
             }
             ExitCode::SUCCESS
