@@ -10,10 +10,15 @@ fn main() -> ExitCode {
         eprintln!("Usage: jpegger filename");
         std::process::exit(1);
     }
+
+    let delete_it: bool = false;
     match is_corrupted_jpeg(&args[1]) {
         Ok(is_corrupted) => {
             if is_corrupted {
                 println!("{}", &args[1]);
+                if delete_it {
+                    fs::remove_file(&args[1]);
+                }
             }
             ExitCode::SUCCESS
         }
