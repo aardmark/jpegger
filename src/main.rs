@@ -1,8 +1,6 @@
 use clap::Parser;
-use std::fs;
-use std::fs::File;
-use std::io;
-use std::io::{Read, Seek, SeekFrom};
+use std::fs::{self, File};
+use std::io::{self, Read, Seek, SeekFrom};
 use std::process::ExitCode;
 
 #[derive(Parser)]
